@@ -1,8 +1,9 @@
 import requests
+import datetime as dt
 import matplotlib
 import matplotlib.pyplot as plt
 from   matplotlib.dates  import MonthLocator, DateFormatter
-import datetime as dt
+from   matplotlib.ticker import FuncFormatter
 
 ############################
 ##### Helper functions #####
@@ -58,8 +59,7 @@ def dates_views(topic):
 ##### Settings for the plot #####
 #################################
 
-## Custom style settings for the plot
-
+## Custom style settings
 bgcolor = 'lavenderblush'
 textcolor = 'xkcd:dark magenta'
 gridcolor = 'thistle'
@@ -79,9 +79,12 @@ pinkstyle = {
     'legend.shadow': True,
 }
 
-## Define formatter for page views: show numbers with comma, e.g. 800,000
-LargeNumberFormatter = \
-    matplotlib.ticker.FuncFormatter(lambda x, _pos: format(int(x), ','))
+def with_comma(tick_value, _position):
+    """Formatter for page views. Shows numbers with comma, e.g. 800,000.
+       The second argument is required by matplotlib.ticker.FuncFormatter,
+       but not needed in the output.
+    """
+    return format(int(tick_value), ',')
 
 ## Fabulous colors to plot our divas (https://matplotlib.org/stable/gallery/color/named_colors.html)
 pinks = ['crimson', 'fuchsia', 'xkcd:bubblegum pink', 'orchid', 'hotpink']
@@ -111,8 +114,8 @@ for dname, dcolor in zip(divas, pinks):
             alpha=0.8      # Slightly transparent (because of possible overlap)
             )
 
-ax.xaxis.set_major_locator(MonthLocator())          # Set month as labels for x-axis
+ax.xaxis.set_major_locator(MonthLocator())          # Use months as ticks for x-axis
 ax.xaxis.set_major_formatter(DateFormatter('%b'))   # 3-letter name like Jan, Feb
-ax.yaxis.set_major_formatter(LargeNumberFormatter)  # Format large numbers with comma
+ax.yaxis.set_major_formatter(FuncFormatter(with_comma)) # Format large numbers with comma
 plt.legend() # Display the name and color of the diva in a legend
 plt.show()   # Show the plot!
